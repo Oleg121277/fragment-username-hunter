@@ -1,0 +1,42 @@
+$task = @"
+<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Author>Hermes</Author>
+    <Description>Будильник на 08:00 — проиграть мелодию и показать окно</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <TimeTrigger>
+      <StartBoundary>2026-07-01T08:00:00</StartBoundary>
+      <Enabled>true</Enabled>
+    </TimeTrigger>
+  </Triggers>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
+    <Priority>5</Priority>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>powershell</Command>
+      <Arguments>-NoProfile -WindowStyle Hidden -Command "Add-Type -AssemblyName PresentationFramework; `$w=New-Object System.Windows.Window; `$w.Title='Будильник'; `$w.Width=420; `$w.Height=160; `$w.WindowStartupLocation='CenterScreen'; `$w.Topmost=`$true; `$b=New-Object System.Windows.Controls.TextBlock; `$b.Text='Подъём! 08:00'; `$b.FontSize=28; `$b.HorizontalAlignment='Center'; `$b.VerticalAlignment='Center'; `$w.Content=`$b; `$null=`$w.Show(); (New-Object Media.SoundPlayer 'C:\Windows\Media\Alarm01.wav').PlayLooping()"</Arguments>
+    </Exec>
+  </Actions>
+</Task>
+"@
+
+$xmlPath = "D:\AI\alina\scripts\alarm_08am.xml"
+[System.IO.File]::WriteAllText($xmlPath, $task, [System.Text.Encoding]::Unicode)
+
+$ts = New-ScheduledTaskSettings -StartWhenAvailable -AllowStartOnDemand -ExecutionTimeLimit (New-TimeSpan -Hours 1)
+Register-ScheduledTask -TaskName "Hermes_Alarm_08" -Xml (Get-Content $xmlPath -Raw) -Force | Out-Null
+"Registered: $((Get-ScheduledTask -TaskName Hermes_Alarm_08).State)"
+"Next run: $((Get-ScheduledTaskInfo -TaskName Hermes_Alarm_08).NextRunTime)"

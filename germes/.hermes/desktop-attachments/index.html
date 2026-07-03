@@ -1,0 +1,2279 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)file:///E:/Downloads/Telegram%20Desktop/dsds.html -->
+<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fragment Username Hunter</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f5f0;
+    --surface: #ffffff;
+    --surface2: #f9f9f6;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text-sec: #6b6b67;
+    --text-muted: #a0a09a;
+    --accent: #2563eb;
+    --accent-bg: #eff6ff;
+    --accent-border: #bfdbfe;
+    --accent-text: #1d4ed8;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --success-border: #bbf7d0;
+    --warning: #d97706;
+    --warning-bg: #fffbeb;
+    --warning-border: #fde68a;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --danger-border: #fecaca;
+    --radius: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141412;
+      --surface: #1e1e1b;
+      --surface2: #252521;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.15);
+      --text: #e8e8e2;
+      --text-sec: #9a9a94;
+      --text-muted: #6a6a65;
+      --accent: #3b82f6;
+      --accent-bg: #1e3a5f;
+      --accent-border: #2563eb;
+      --accent-text: #93c5fd;
+      --success: #4ade80;
+      --success-bg: #052e16;
+      --success-border: #166534;
+      --warning: #fbbf24;
+      --warning-bg: #1c1300;
+      --warning-border: #78350f;
+      --danger: #f87171;
+      --danger-bg: #2d0000;
+      --danger-border: #7f1d1d;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 820px; margin: 0 auto; }
+
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .subtitle { font-size: 14px; color: var(--text-sec); margin-bottom: 1.5rem; }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+  }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+
+  .chip {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-sec);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.12s;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.on { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent-text); }
+  .chip.on.suc { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+  .chip.on.warn { background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning); }
+
+  .divider { height: 0.5px; background: var(--border); margin: 0.5rem 0 1rem; }
+
+  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+
+  button {
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-strong);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.12s, opacity 0.12s, transform 0.05s;
+    font-family: inherit;
+  }
+  button:hover { background: var(--surface2); }
+  button:active { transform: scale(0.97); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.primary:hover { opacity: 0.9; background: var(--accent); }
+  button.danger { border-color: var(--danger); color: var(--danger); }
+  button.danger:hover { background: var(--danger-bg); }
+  button.success { border-color: var(--success); color: var(--success); }
+  button.success:hover { background: var(--success-bg); }
+  button.warn { border-color: var(--warning); color: var(--warning); }
+  button.warn:hover { background: var(--warning-bg); }
+
+  .status { font-size: 13px; color: var(--text-sec); min-height: 18px; margin-bottom: 3px; word-break: break-word; }
+  .meta { font-size: 12px; color: var(--text-muted); margin-bottom: 0.75rem; min-height: 16px; }
+
+  .progress-wrap {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    display: none;
+  }
+  .progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.2s; width: 0%; }
+
+  .quick-check-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .quick-check-row input {
+    flex: 1;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+  }
+  .quick-check-row input:focus { border-color: var(--accent); }
+
+  .quick-result {
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-sec);
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+    word-break: break-word;
+  }
+  .quick-result.available { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+  .quick-result.sale { background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning); }
+  .quick-result.taken { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger); }
+
+  .stop-limit-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .stop-limit-row label { font-size: 13px; color: var(--text-sec); }
+  .stop-limit-row select, .stop-limit-row input[type=number] {
+    font-size: 13px;
+    padding: 5px 10px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+  }
+  .stop-limit-row input[type=number] { width: 70px; cursor: text; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .tab {
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-sec);
+    cursor: pointer;
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .tab.active { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent-text); }
+
+  .download-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 0.75rem;
+    border-top: 0.5px solid var(--border);
+    margin-top: 0.5rem;
+  }
+  .download-row button { font-size: 12px; padding: 5px 12px; }
+
+  .results-toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    background: var(--surface2);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+  }
+  .results-toolbar input[type=search] {
+    flex: 1;
+    min-width: 150px;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+  }
+  .results-toolbar select {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .results-toolbar .stat {
+    font-size: 12px;
+    color: var(--text-sec);
+    padding: 4px 8px;
+  }
+  .results-toolbar .stat strong { color: var(--text); }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 8px;
+  }
+
+  .result-card {
+    background: var(--success-bg);
+    border: 0.5px solid var(--success-border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: opacity 0.2s, transform 0.1s;
+    cursor: pointer;
+    position: relative;
+  }
+  .result-card:hover { transform: translateY(-1px); }
+  .result-card.sale { background: var(--warning-bg); border-color: var(--warning-border); }
+  .result-card.taken { background: var(--danger-bg); border-color: var(--danger-border); display: none; }
+  .result-card.taken.show { display: flex; }
+  .result-card.flash { animation: flash 0.6s; }
+
+  @keyframes flash {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    50% { box-shadow: 0 0 0 4px var(--accent); }
+  }
+
+  .result-top { display: flex; align-items: center; justify-content: space-between; }
+  .result-name { font-size: 14px; font-weight: 600; color: var(--success); }
+  .result-card.sale .result-name { color: var(--warning); }
+  .result-card.taken .result-name { color: var(--danger); }
+
+  .result-price { font-size: 11px; color: var(--warning); font-weight: 600; }
+
+  .result-link { font-size: 14px; color: var(--text-muted); text-decoration: none; flex-shrink: 0; }
+  .result-link:hover { color: var(--accent); }
+
+  .score-bar { height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; }
+  .score-fill { height: 100%; background: var(--success); border-radius: 1px; transition: width 0.3s; }
+  .result-card.sale .score-fill { background: var(--warning); }
+  .result-card.taken .score-fill { background: var(--danger); }
+
+  .badges { display: flex; gap: 4px; flex-wrap: wrap; }
+  .badge { font-size: 10px; padding: 2px 6px; border-radius: 10px; background: var(--surface2); color: var(--text-muted); border: 0.5px solid var(--border); }
+
+  .cors-tip {
+    background: var(--accent-bg);
+    border: 0.5px solid var(--accent-border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--accent-text);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cors-tip .close-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent-text);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+    margin-left: auto;
+    line-height: 1;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .hint a { color: var(--accent); }
+
+  .counter-row {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-sec);
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .counter-row span { display: flex; align-items: center; gap: 4px; }
+  .counter-row strong { color: var(--text); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 0.5px solid var(--border-strong);
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.25s ease;
+    z-index: 9999;
+    pointer-events: none;
+    max-width: 90vw;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-success { border-color: var(--success); color: var(--success); background: var(--success-bg); }
+  .toast-warning { border-color: var(--warning); color: var(--warning); background: var(--warning-bg); }
+  .toast-error { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .modal-backdrop.show { opacity: 1; pointer-events: auto; }
+  .modal {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border: 0.5px solid var(--border);
+  }
+  .modal h3 { font-size: 16px; margin-bottom: 12px; }
+  .modal p { font-size: 13px; color: var(--text-sec); margin-bottom: 12px; line-height: 1.5; }
+  .modal textarea {
+    width: 100%;
+    min-height: 80px;
+    font-family: ui-monospace, 'SF Mono', monospace;
+    font-size: 12px;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface2);
+    color: var(--text);
+    resize: vertical;
+    outline: none;
+  }
+  .modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+
+  @media (max-width: 500px) {
+    body { padding: 1rem 0.75rem; }
+    h1 { font-size: 18px; }
+    .results-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>🎯 Fragment Username Hunter</h1>
+  <p class="subtitle">Ищет юзернеймы Telegram: свободные, занятые и на аукционе. С параллельной проверкой и ETA.</p>
+
+  <div class="cors-tip" id="corsTip">
+    💡 Включите расширение <strong>Allow CORS</strong> (или «CORS Unblock») для работы.
+    <button class="close-btn" onclick="document.getElementById(&#39;corsTip&#39;).remove()" title="Скрыть">×</button>
+  </div>
+
+  <!-- Quick check -->
+  <div class="card">
+    <div class="section-label">Быстрая проверка ника</div>
+    <div class="quick-check-row">
+      <input type="text" id="quickInput" placeholder="Введите юзернейм (без @)…" maxlength="32">
+      <button class="primary" id="quickBtn">Проверить</button>
+    </div>
+    <div class="quick-result" id="quickResult">Введите ник и нажмите «Проверить»</div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:4px">
+      💡 Подсказка: <a href="file:///E:/Downloads/Telegram%20Desktop/dsds.html#" onclick="event.preventDefault();openCookiesModal()" style="color:var(--accent)">вставьте cookie stel_ssid</a> для более надёжных ответов
+    </div>
+  </div>
+
+  <!-- Hunt settings -->
+  <div class="card">
+    <div class="section-label">Длина</div>
+    <div class="chip-row">
+      <span class="chip suc on" data-g="len" data-v="4">4 символа 🔥</span>
+      <span class="chip" data-g="len" data-v="5">5 символов</span>
+      <span class="chip" data-g="len" data-v="6">6 символов</span>
+      <span class="chip" data-g="len" data-v="7+">7+ символов</span>
+    </div>
+
+    <div class="section-label">Тематика</div>
+    <div class="chip-row">
+      <span class="chip warn" data-g="theme" data-v="crypto">Крипто</span>
+      <span class="chip warn" data-g="theme" data-v="finance">Финансы</span>
+      <span class="chip" data-g="theme" data-v="tech">Технологии</span>
+      <span class="chip" data-g="theme" data-v="brand">Бренд-слова</span>
+      <span class="chip" data-g="theme" data-v="chinese">Китайский рынок</span>
+      <span class="chip" data-g="theme" data-v="names">Имена</span>
+      <span class="chip" data-g="theme" data-v="gaming">Гейминг</span>
+      <span class="chip" data-g="theme" data-v="casino">Казино/беттинг</span>
+    </div>
+
+    <div class="section-label">Структура</div>
+    <div class="chip-row">
+      <span class="chip" data-g="struct" data-v="realword">Реальные слова</span>
+      <span class="chip" data-g="struct" data-v="pronounceable">Произносимые</span>
+      <span class="chip" data-g="struct" data-v="doubling">Удвоения (aabb)</span>
+      <span class="chip" data-g="struct" data-v="palindrome">Палиндромы</span>
+      <span class="chip" data-g="struct" data-v="numbers">С цифрами</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="stop-limit-row">
+      <label>Параллельность:</label>
+      <input id="concurrency" type="number" min="1" max="8" value="4">
+      <label>Стоп после:</label>
+      <input id="stopLimit" type="number" min="0" value="10" title="0 = без лимита">
+      <label>свободных</label>
+      <label style="margin-left:8px">Показывать:</label>
+      <select id="showFilter">
+        <option value="available">Только свободные</option>
+        <option value="sale">Только на аукционе</option>
+        <option value="taken">Только занятые</option>
+        <option value="all">Все проверенные</option>
+      </select>
+    </div>
+
+    <div class="controls">
+      <button class="primary" id="startBtn">▶ Начать поиск</button>
+      <button id="pauseBtn" style="display:none">❚❚ Пауза</button>
+      <button class="danger" id="stopBtn" style="display:none">■ Стоп</button>
+      <button id="clearBtn">Очистить</button>
+    </div>
+
+    <div class="progress-wrap" id="pw"><div class="progress-bar" id="pb"></div></div>
+    <div class="status" id="status">Выберите критерии и нажмите «Начать поиск»</div>
+    <div class="meta" id="meta"></div>
+
+    <div class="counter-row" id="counters" style="display:none">
+      <span>✅ Свободных: <strong id="cntFree">0</strong></span>
+      <span>🏷 На аукционе: <strong id="cntSale">89</strong></span>
+      <span>🔒 Занятых: <strong id="cntTaken">0</strong></span>
+      <span>📊 Всего: <strong id="cntTotal">89</strong></span>
+    </div>
+
+    <div class="download-row" id="downloadRow" style="display: flex;">
+      <button class="success" data-dl="available,txt">⬇ Free .txt</button>
+      <button class="success" data-dl="available,csv">⬇ Free .csv</button>
+      <button class="success" data-dl="available,json">⬇ Free .json</button>
+      <button class="warn" data-dl="sale,txt">⬇ Sale .txt</button>
+      <button class="danger" data-dl="taken,txt">⬇ Taken .txt</button>
+      <button data-dl="all,txt">⬇ Все .txt</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-toolbar" id="resultsToolbar" style="display: flex;">
+    <input type="search" id="searchInput" placeholder="🔍 Поиск среди результатов…">
+    <select id="sortBy">
+      <option value="score">По оценке ↓</option>
+      <option value="length">По длине ↑</option>
+      <option value="name">По имени</option>
+      <option value="time">Свежие ↑</option>
+    </select>
+    <span class="stat">Видно: <strong id="visibleCount">89</strong></span>
+  </div>
+  <div class="results-grid" id="results"><div class="result-card sale" data-status="sale" data-name="rfee" data-score="60" data-length="4" data-ts="1782997363551" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @rfee</span>
+      <a class="result-link" href="https://fragment.com/username/rfee" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="zgid" data-score="60" data-length="4" data-ts="1782997363551" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @zgid</span>
+      <a class="result-link" href="https://fragment.com/username/zgid" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="tnai" data-score="60" data-length="4" data-ts="1782997363551" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @tnai</span>
+      <a class="result-link" href="https://fragment.com/username/tnai" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="eefi" data-score="60" data-length="4" data-ts="1782997363551" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @eefi</span>
+      <a class="result-link" href="https://fragment.com/username/eefi" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="svix" data-score="60" data-length="4" data-ts="1782997363551" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @svix</span>
+      <a class="result-link" href="https://fragment.com/username/svix" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="pexh" data-score="60" data-length="4" data-ts="1782997363551" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @pexh</span>
+      <a class="result-link" href="https://fragment.com/username/pexh" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="eior" data-score="60" data-length="4" data-ts="1782997363551" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @eior</span>
+      <a class="result-link" href="https://fragment.com/username/eior" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="osuw" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @osuw</span>
+      <a class="result-link" href="https://fragment.com/username/osuw" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="eurd" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @eurd</span>
+      <a class="result-link" href="https://fragment.com/username/eurd" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="ooid" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @ooid</span>
+      <a class="result-link" href="https://fragment.com/username/ooid" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="goqx" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @goqx</span>
+      <a class="result-link" href="https://fragment.com/username/goqx" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="ajhi" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @ajhi</span>
+      <a class="result-link" href="https://fragment.com/username/ajhi" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="wdar" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @wdar</span>
+      <a class="result-link" href="https://fragment.com/username/wdar" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="ozdi" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @ozdi</span>
+      <a class="result-link" href="https://fragment.com/username/ozdi" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="xavw" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @xavw</span>
+      <a class="result-link" href="https://fragment.com/username/xavw" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="uauf" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @uauf</span>
+      <a class="result-link" href="https://fragment.com/username/uauf" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="caxp" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @caxp</span>
+      <a class="result-link" href="https://fragment.com/username/caxp" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="itji" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @itji</span>
+      <a class="result-link" href="https://fragment.com/username/itji" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="dafq" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @dafq</span>
+      <a class="result-link" href="https://fragment.com/username/dafq" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="kwez" data-score="60" data-length="4" data-ts="1782997363552" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @kwez</span>
+      <a class="result-link" href="https://fragment.com/username/kwez" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="siua" data-score="60" data-length="4" data-ts="1782997363553" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @siua</span>
+      <a class="result-link" href="https://fragment.com/username/siua" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="xviq" data-score="60" data-length="4" data-ts="1782997363553" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @xviq</span>
+      <a class="result-link" href="https://fragment.com/username/xviq" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="ppeu" data-score="60" data-length="4" data-ts="1782997363553" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @ppeu</span>
+      <a class="result-link" href="https://fragment.com/username/ppeu" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="miii" data-score="60" data-length="4" data-ts="1782997363553" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @miii</span>
+      <a class="result-link" href="https://fragment.com/username/miii" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="oxbi" data-score="60" data-length="4" data-ts="1782997363553" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @oxbi</span>
+      <a class="result-link" href="https://fragment.com/username/oxbi" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="nriz" data-score="60" data-length="4" data-ts="1782997363553" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @nriz</span>
+      <a class="result-link" href="https://fragment.com/username/nriz" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="jadc" data-score="60" data-length="4" data-ts="1782997363553" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @jadc</span>
+      <a class="result-link" href="https://fragment.com/username/jadc" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="iauj" data-score="60" data-length="4" data-ts="1782997363553" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @iauj</span>
+      <a class="result-link" href="https://fragment.com/username/iauj" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="tsig" data-score="60" data-length="4" data-ts="1782997363553" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @tsig</span>
+      <a class="result-link" href="https://fragment.com/username/tsig" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="fibk" data-score="60" data-length="4" data-ts="1782997363554" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @fibk</span>
+      <a class="result-link" href="https://fragment.com/username/fibk" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="odsi" data-score="60" data-length="4" data-ts="1782997363554" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @odsi</span>
+      <a class="result-link" href="https://fragment.com/username/odsi" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="uuzy" data-score="60" data-length="4" data-ts="1782997363554" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @uuzy</span>
+      <a class="result-link" href="https://fragment.com/username/uuzy" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="zqes" data-score="60" data-length="4" data-ts="1782997363554" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @zqes</span>
+      <a class="result-link" href="https://fragment.com/username/zqes" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="wewa" data-score="60" data-length="4" data-ts="1782997363554" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @wewa</span>
+      <a class="result-link" href="https://fragment.com/username/wewa" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="oeof" data-score="60" data-length="4" data-ts="1782997363554" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @oeof</span>
+      <a class="result-link" href="https://fragment.com/username/oeof" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="lxoy" data-score="60" data-length="4" data-ts="1782997363555" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @lxoy</span>
+      <a class="result-link" href="https://fragment.com/username/lxoy" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="zuvu" data-score="60" data-length="4" data-ts="1782997363555" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @zuvu</span>
+      <a class="result-link" href="https://fragment.com/username/zuvu" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="towz" data-score="60" data-length="4" data-ts="1782997363555" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @towz</span>
+      <a class="result-link" href="https://fragment.com/username/towz" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="azuj" data-score="60" data-length="4" data-ts="1782997363555" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @azuj</span>
+      <a class="result-link" href="https://fragment.com/username/azuj" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="yokd" data-score="60" data-length="4" data-ts="1782997363555" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @yokd</span>
+      <a class="result-link" href="https://fragment.com/username/yokd" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="vsuf" data-score="60" data-length="4" data-ts="1782997363555" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @vsuf</span>
+      <a class="result-link" href="https://fragment.com/username/vsuf" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="oaog" data-score="60" data-length="4" data-ts="1782997363556" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @oaog</span>
+      <a class="result-link" href="https://fragment.com/username/oaog" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="drak" data-score="60" data-length="4" data-ts="1782997363556" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @drak</span>
+      <a class="result-link" href="https://fragment.com/username/drak" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="hxum" data-score="60" data-length="4" data-ts="1782997363556" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @hxum</span>
+      <a class="result-link" href="https://fragment.com/username/hxum" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="netp" data-score="60" data-length="4" data-ts="1782997363556" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @netp</span>
+      <a class="result-link" href="https://fragment.com/username/netp" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="eemg" data-score="60" data-length="4" data-ts="1782997363556" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @eemg</span>
+      <a class="result-link" href="https://fragment.com/username/eemg" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="bueq" data-score="60" data-length="4" data-ts="1782997363556" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @bueq</span>
+      <a class="result-link" href="https://fragment.com/username/bueq" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="jolg" data-score="60" data-length="4" data-ts="1782997363557" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @jolg</span>
+      <a class="result-link" href="https://fragment.com/username/jolg" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="ptus" data-score="60" data-length="4" data-ts="1782997363557" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @ptus</span>
+      <a class="result-link" href="https://fragment.com/username/ptus" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="cebh" data-score="60" data-length="4" data-ts="1782997363557" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @cebh</span>
+      <a class="result-link" href="https://fragment.com/username/cebh" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="refl" data-score="60" data-length="4" data-ts="1782997363557" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @refl</span>
+      <a class="result-link" href="https://fragment.com/username/refl" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="qurj" data-score="60" data-length="4" data-ts="1782997363557" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @qurj</span>
+      <a class="result-link" href="https://fragment.com/username/qurj" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="hlec" data-score="60" data-length="4" data-ts="1782997363558" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @hlec</span>
+      <a class="result-link" href="https://fragment.com/username/hlec" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="cuvt" data-score="60" data-length="4" data-ts="1782997363558" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @cuvt</span>
+      <a class="result-link" href="https://fragment.com/username/cuvt" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="gear" data-score="60" data-length="4" data-ts="1782997363558" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @gear</span>
+      <a class="result-link" href="https://fragment.com/username/gear" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="esic" data-score="60" data-length="4" data-ts="1782997363558" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @esic</span>
+      <a class="result-link" href="https://fragment.com/username/esic" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="hage" data-score="60" data-length="4" data-ts="1782997363558" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @hage</span>
+      <a class="result-link" href="https://fragment.com/username/hage" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="uyah" data-score="60" data-length="4" data-ts="1782997363558" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @uyah</span>
+      <a class="result-link" href="https://fragment.com/username/uyah" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="glan" data-score="60" data-length="4" data-ts="1782997363559" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @glan</span>
+      <a class="result-link" href="https://fragment.com/username/glan" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="dken" data-score="60" data-length="4" data-ts="1782997363559" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @dken</span>
+      <a class="result-link" href="https://fragment.com/username/dken" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="usgu" data-score="60" data-length="4" data-ts="1782997363559" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @usgu</span>
+      <a class="result-link" href="https://fragment.com/username/usgu" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="hawi" data-score="60" data-length="4" data-ts="1782997363559" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @hawi</span>
+      <a class="result-link" href="https://fragment.com/username/hawi" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="zamu" data-score="60" data-length="4" data-ts="1782997363559" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @zamu</span>
+      <a class="result-link" href="https://fragment.com/username/zamu" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="ixoo" data-score="60" data-length="4" data-ts="1782997363559" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @ixoo</span>
+      <a class="result-link" href="https://fragment.com/username/ixoo" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="qiat" data-score="60" data-length="4" data-ts="1782997363560" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @qiat</span>
+      <a class="result-link" href="https://fragment.com/username/qiat" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="bujh" data-score="60" data-length="4" data-ts="1782997363560" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @bujh</span>
+      <a class="result-link" href="https://fragment.com/username/bujh" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="noxa" data-score="60" data-length="4" data-ts="1782997363560" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @noxa</span>
+      <a class="result-link" href="https://fragment.com/username/noxa" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="wdal" data-score="60" data-length="4" data-ts="1782997363560" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @wdal</span>
+      <a class="result-link" href="https://fragment.com/username/wdal" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="lfig" data-score="60" data-length="4" data-ts="1782997363560" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @lfig</span>
+      <a class="result-link" href="https://fragment.com/username/lfig" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="okoa" data-score="60" data-length="4" data-ts="1782997363560" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @okoa</span>
+      <a class="result-link" href="https://fragment.com/username/okoa" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="labx" data-score="60" data-length="4" data-ts="1782997363561" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @labx</span>
+      <a class="result-link" href="https://fragment.com/username/labx" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="nviu" data-score="60" data-length="4" data-ts="1782997363561" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @nviu</span>
+      <a class="result-link" href="https://fragment.com/username/nviu" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="nsix" data-score="60" data-length="4" data-ts="1782997363561" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @nsix</span>
+      <a class="result-link" href="https://fragment.com/username/nsix" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="rehj" data-score="60" data-length="4" data-ts="1782997363561" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @rehj</span>
+      <a class="result-link" href="https://fragment.com/username/rehj" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="ojiu" data-score="60" data-length="4" data-ts="1782997363561" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @ojiu</span>
+      <a class="result-link" href="https://fragment.com/username/ojiu" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="ribj" data-score="60" data-length="4" data-ts="1782997363561" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @ribj</span>
+      <a class="result-link" href="https://fragment.com/username/ribj" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="puoy" data-score="60" data-length="4" data-ts="1782997363562" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @puoy</span>
+      <a class="result-link" href="https://fragment.com/username/puoy" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="uowf" data-score="60" data-length="4" data-ts="1782997363562" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @uowf</span>
+      <a class="result-link" href="https://fragment.com/username/uowf" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="lesv" data-score="60" data-length="4" data-ts="1782997363562" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @lesv</span>
+      <a class="result-link" href="https://fragment.com/username/lesv" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="snuc" data-score="60" data-length="4" data-ts="1782997363562" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @snuc</span>
+      <a class="result-link" href="https://fragment.com/username/snuc" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="sfif" data-score="60" data-length="4" data-ts="1782997363562" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @sfif</span>
+      <a class="result-link" href="https://fragment.com/username/sfif" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="udji" data-score="60" data-length="4" data-ts="1782997363563" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @udji</span>
+      <a class="result-link" href="https://fragment.com/username/udji" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="enok" data-score="60" data-length="4" data-ts="1782997363563" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @enok</span>
+      <a class="result-link" href="https://fragment.com/username/enok" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="molg" data-score="60" data-length="4" data-ts="1782997363563" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @molg</span>
+      <a class="result-link" href="https://fragment.com/username/molg" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="pobx" data-score="60" data-length="4" data-ts="1782997363563" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @pobx</span>
+      <a class="result-link" href="https://fragment.com/username/pobx" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="miwl" data-score="60" data-length="4" data-ts="1782997363563" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @miwl</span>
+      <a class="result-link" href="https://fragment.com/username/miwl" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="ovxu" data-score="60" data-length="4" data-ts="1782997363563" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @ovxu</span>
+      <a class="result-link" href="https://fragment.com/username/ovxu" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="mifm" data-score="60" data-length="4" data-ts="1782997363564" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @mifm</span>
+      <a class="result-link" href="https://fragment.com/username/mifm" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div><div class="result-card sale" data-status="sale" data-name="alab" data-score="60" data-length="4" data-ts="1782997363564" style="">
+    <div class="result-top">
+      <span class="result-name">🏷 @alab</span>
+      <a class="result-link" href="https://fragment.com/username/alab" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    
+    <div class="score-bar"><div class="score-fill" style="width:40%"></div></div>
+    <div class="badges"><span class="badge">4 симв</span></div>
+  </div></div>
+  <div class="hint" id="hint"></div>
+
+</div>
+
+<!-- Cookies modal -->
+<div class="modal-backdrop" id="cookiesModal">
+  <div class="modal">
+    <h3>🍪 Fragment Cookie (stel_ssid)</h3>
+    <p>Это опционально. С этим cookie Fragment отдаёт больше данных (цены, историю) и не блокирует повторные запросы.<br><br>
+    <strong>Как получить:</strong> откройте <code>fragment.com</code> → DevTools → Network → любой запрос к fragment.com → найдите cookie <code>stel_ssid</code> → скопируйте значение.</p>
+    <textarea id="cookiesInput" placeholder="Вставьте значение cookie stel_ssid…"></textarea>
+    <div class="modal-actions">
+      <button onclick="closeCookiesModal()">Отмена</button>
+      <button class="danger" onclick="clearCookies()">Очистить</button>
+      <button class="primary" onclick="saveCookies()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// Constants & State
+// ═══════════════════════════════════════════════════════════════
+
+const STORAGE_KEY = 'fh_state_v2';
+const COOKIE_KEY = 'fh_cookie_stel_ssid';
+
+const state = {
+  results: [],
+  running: false,
+  paused: false,
+  cursor: 0,
+  checked: 0,
+  cntFree: 0,
+  cntSale: 0,
+  cntTaken: 0,
+  errors: 0,
+  consecutiveErrors: 0,
+  currentDelay: 350,
+  startedAt: 0,
+};
+
+// ═══════════════════════════════════════════════════════════════
+// Word pools (расширенный набор)
+// ═══════════════════════════════════════════════════════════════
+
+const WORDS = {
+  crypto: ['defi','dex','amm','dao','nft','ton','btc','eth','sol','bnb','xrp','ada','dot','link','uni','aave','comp','mkr','crv','bal','sushi','cake','near','ftm','rune','atom','osmo','inj','apt','sui','tia','pyth','pepe','doge','shib','floki','chad','wagmi','hodl','fomo','gm','pump','ape','alpha','beta','omega','sigma','delta','gamma','zeta','whale','bull','bear','moon','rekt','based','yield','stake','vault','pool','farm','mint','burn','swap','bridge','wrap','lock','drop','claim','airdrop','launchpad','presale','governance','proposal','vote','multisig','lambo','wen','ngmi','ser','anon','fren','buidl','chad','gigabrain','copium','hopium','ngu','jeet','exit','fud','fudster','dyor','ta','macd','rsi','ath','atl','btfd','hodler','maxi','nonfungible','metaverse','web3','zero','proof','layer','rollup','zk','op','evm','solidity','rust','move'],
+  finance: ['bank','cash','gold','fund','bond','loan','debt','pay','earn','rich','safe','escrow','wire','remit','asset','credit','debit','prime','mint','issue','forex','etf','ipo','reit','trust','hedge','trade','stock','index','yield','rate','cap','spot','future','option','margin','leverage','rally','dip','boom','bust','profit','loss','fee','tax','kyc','aml','swift','sepa','iban','wealth','retire','invest','grow','save','spend','afford','value','cost','worth','supply','demand','price','market','silver','platinum','copper','bullion','reserve','teller','vault','banker','lend','borrow','spend','save'],
+  tech: ['data','code','byte','core','node','mesh','flux','cloud','edge','api','sdk','cli','git','repo','fork','deploy','build','cache','queue','stream','sync','async','event','hook','plugin','theme','config','key','token','hash','sign','cert','ssl','tls','http','rest','grpc','tcp','dns','cdn','linux','web','mobile','server','client','backend','frontend','devops','ml','ai','gpt','llm','bot','agent','react','vue','node','rust','go','py','rs','ts','js','rb','swift','kotlin','java','cpp','sql','noSQL','redis','db','docker','k8s','aws','gcp','azure','ci','cd','qa','agile','scrum','ux','ui','figma','sass','less','webpack','vite','next','nuxt'],
+  brand: ['nova','apex','lynx','wolf','hawk','peak','crest','forge','craft','labs','works','hub','zone','space','world','global','ultra','meta','hyper','super','mega','nano','micro','max','pro','plus','prime','elite','ace','lead','edge','next','fresh','bold','smart','fast','easy','clean','pure','real','true','great','grand','main','central','zero','first','epic','swift','flex','rise','spark','glow','pulse','surge','force','power','nexus','zenith','onyx','cobalt','aura','echo','vibe','muse','icon','reign','vivid','bold','zen','arc','orb','ray','vox','helix','atlas','titan','quartz','iron','steel','ghost','shadow','storm','flame','frost','thunder','dusk','dawn'],
+  chinese: ['bao','dao','wan','yuan','jin','hua','long','feng','hong','tang','wang','li','zhang','liu','chen','yang','huang','zhao','wu','zhou','xu','sun','ma','zhu','hu','guo','lin','he','gao','luo','zheng','liang','xie','han','wei','shen','song','peng','cao','deng','xiao','tian','dong','yu','pan','jiang','cai','du','ye','fu','cheng','qian','bai','fan','lu','kong','cui','kang','jia','liao','ding','an','qin','shi','ren','yue','ni','jing','tao','shan','meng','yin','qiu','fang','yao','pang','zeng','su','hou','lei','zhong','mao','hai','bei','nan','xi','tong','hao','zhen','sheng','hua','mei','xia','lei','tao','heng','chen','hao','yuan'],
+  names: ['alex','max','leo','sam','dan','tom','ben','joe','bob','rob','tim','jim','ken','ted','fred','brad','chad','zach','nick','rick','mike','luke','jake','dave','mark','paul','john','jack','adam','ryan','evan','ivan','igor','oleg','roman','boris','victor','anton','artem','vadim','pavel','peter','anna','maria','kate','lena','olga','vera','anya','dasha','masha','natasha','tanya','sasha','vanya','kolya','petya','dima','alyosha','mitya','senya','gosha','pasha','zhenya','seva','kostya','vova','grisha','volodya','ali','omar','yusuf','ahmed','sara','layla','nour','maya','sofia','elena','nina','rina','lara','mia','zoe','emma','ella','luna','iris','ada','ivy','ava','mila','nora','vera','inga','inga','lola','kira','diana','diana','vika','nina','lada','lyra','dara','tara','sara','lara','eva','inga'],
+  gaming: ['fps','pvp','pve','rpg','mmo','moba','rts','npc','xp','loot','drop','boss','raid','guild','clan','team','squad','frag','kill','death','respawn','spawn','map','quest','mission','level','rank','tier','elo','mmr','pro','gamer','streamer','twitch','esport','tournament','league','champion','hero','warrior','mage','rogue','paladin','druid','shaman','hunter','priest','monk','bard','ranger','ninja','samurai','pirate','knight','king','queen','emperor','god','legend','epic','rare','common','mythic','divine','craft','mine','build','farm','grind','xp','grind','quest','shard','crystal','scroll','spell','potion','sword','shield','armor','bow','staff','wand','dagger','axe','mace','spear','lance','relic','rune','glyph','talisman','amulet','ring','crown','orb','gem'],
+  casino: ['bet','win','slot','spin','jackpot','poker','blackjack','roulette','dice','chip','odds','bookie','punt','wager','rake','ante','bluff','fold','call','raise','check','flop','turn','river','bust','split','double','hit','stand','shuffle','dealer','house','edge','rtp','bonus','promo','cashback','vip','whale','high','roller','table','live','crypto','bitcoin','fast','payout','withdraw','deposit','lucky','fortune','rich','big','mega','super','grand','royal','ace','king','queen','jack','ten','spade','heart','diamond','club','suit','trump','bridge','baccarat','craps','sicbo','keno','bingo','lotto','scratch','reel','payline','scatter','wild','multiplier','free','hold','bonus']
+};
+
+// ═══════════════════════════════════════════════════════════════
+// Helpers
+// ═══════════════════════════════════════════════════════════════
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function debounce(fn, ms) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+function toast(msg, type = 'info', duration = 2500) {
+  $$('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => t.remove(), 300);
+  }, duration);
+}
+
+function formatTime(sec) {
+  if (!isFinite(sec) || sec < 0) return '—';
+  if (sec < 60) return `${Math.round(sec)}с`;
+  if (sec < 3600) return `${Math.round(sec/60)}м`;
+  return `${(sec/3600).toFixed(1)}ч`;
+}
+
+function formatNumber(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+const isPronounce = (s) => {
+  const v = /[aeiou]/;
+  let cc = 0;
+  for (let i = 0; i < s.length-1; i++) if (!v.test(s[i]) && !v.test(s[i+1])) cc++;
+  return cc <= 2 && v.test(s);
+};
+const isPalin = (s) => s === [...s].reverse().join('');
+const hasDouble = (s) => { for (let i = 0; i < s.length-1; i++) if (s[i] === s[i+1]) return true; return false; };
+const hasNum = (s) => /\d/.test(s);
+
+// ═══════════════════════════════════════════════════════════════
+// Generator
+// ═══════════════════════════════════════════════════════════════
+
+function gen4(limit = 700) {
+  const abc = 'abcdefghijklmnopqrstuvwxyz';
+  const s = new Set();
+  // Избегаем слишком много согласных подряд и неблагозвучных комбинаций
+  const v = /[aeiou]/;
+  while (s.size < limit) {
+    let w = '';
+    for (let i = 0; i < 4; i++) w += abc[Math.floor(Math.random()*26)];
+    // Фильтр: минимум 1 гласная, не более 2 согласных подряд
+    if (!v.test(w)) continue;
+    let cc = 0;
+    let ok = true;
+    for (let i = 0; i < w.length; i++) {
+      if (!v.test(w[i])) cc++; else cc = 0;
+      if (cc > 2) { ok = false; break; }
+    }
+    if (ok) s.add(w);
+  }
+  return [...s];
+}
+
+function genLen(len, limit = 500) {
+  const abc = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const l = 'abcdefghijklmnopqrstuvwxyz';
+  const s = new Set();
+  const v = /[aeiou]/;
+  while (s.size < limit) {
+    let w = l[Math.floor(Math.random()*26)];
+    for (let i = 1; i < len-1; i++) w += abc[Math.floor(Math.random()*abc.length)];
+    w += l[Math.floor(Math.random()*26)];
+    if (w.length !== len) continue;
+    if (!v.test(w)) continue;
+    let cc = 0, ok = true;
+    for (let i = 0; i < w.length; i++) {
+      if (!v.test(w[i])) cc++; else cc = 0;
+      if (cc > 3) { ok = false; break; }
+    }
+    if (ok) s.add(w);
+  }
+  return [...s];
+}
+
+function buildCandidates(lenF, themeF) {
+  const candidates = new Set();
+  if (lenF.includes('4')) gen4().forEach(w => candidates.add(w));
+  if (lenF.includes('5')) genLen(5).forEach(w => candidates.add(w));
+  if (lenF.includes('6')) genLen(6).forEach(w => candidates.add(w));
+  if (lenF.includes('7+')) genLen(7).forEach(w => candidates.add(w));
+  if (lenF.includes('8+')) genLen(8).forEach(w => candidates.add(w));
+
+  for (const t of themeF) {
+    if (!WORDS[t]) continue;
+    WORDS[t].forEach(w => {
+      if (w.length < 4) return;  // минимальная длина TG-username — 5, но для поиска в Fragment можно и 4
+      if (w.length > 32) return;
+      if (lenF.length === 0) { candidates.add(w); return; }
+      const fits = lenF.some(l =>
+        l === '4' ? w.length === 4 :
+        l === '5' ? w.length === 5 :
+        l === '6' ? w.length === 6 :
+        (l === '7+' || l === '8+') ? w.length >= 7 : true
+      );
+      if (fits) candidates.add(w);
+    });
+  }
+  return [...candidates];
+}
+
+function applyStructFilter(candidates, structF) {
+  if (!structF.length) return candidates.map(name => ({ name, score: baseScore(name), tags: baseTags(name, []) }));
+  const tagged = candidates.map(name => {
+    const tags = [];
+    let score = baseScore(name);
+    if (structF.includes('palindrome') && isPalin(name)) { score += 30; tags.push('палиндром'); }
+    if (structF.includes('doubling') && hasDouble(name)) { score += 15; tags.push('удвоение'); }
+    if (structF.includes('pronounceable') && isPronounce(name)) { score += 10; tags.push('произнос'); }
+    if (structF.includes('numbers') && hasNum(name)) { score += 5; tags.push('цифры'); }
+    if (structF.includes('realword') && /^[a-z]+$/.test(name)) { score += 8; tags.push('слово'); }
+
+    const ok =
+      (structF.includes('palindrome') && isPalin(name)) ||
+      (structF.includes('doubling') && hasDouble(name)) ||
+      (structF.includes('pronounceable') && isPronounce(name)) ||
+      (structF.includes('numbers') && hasNum(name)) ||
+      (structF.includes('realword') && /^[a-z]+$/.test(name));
+    if (!ok) return null;
+    return { name, score, tags };
+  }).filter(Boolean);
+  return tagged;
+}
+
+function baseScore(name) {
+  if (name.length === 4) return 60;
+  if (name.length === 5) return 25;
+  if (name.length === 6) return 10;
+  return 3;
+}
+
+function baseTags(name, extra = []) {
+  const tags = [...extra];
+  tags.push(`${name.length} симв`);
+  return tags;
+}
+
+function scoreQueue(candidates, themeF) {
+  const lbl = {crypto:'крипто',finance:'финансы',tech:'тех',brand:'бренд',chinese:'кит',names:'имя',gaming:'гейм',casino:'казино'};
+  const scored = candidates.map(({name, score, tags}) => {
+    const finalScore = score;
+    const finalTags = [...tags];
+    for (const t of themeF) {
+      if (WORDS[t]?.includes(name)) {
+        finalScore + 20;
+        finalTags.push(lbl[t] || t);
+      }
+    }
+    return { name, score: finalScore, tags: finalTags };
+  });
+  scored.sort((a,b) => b.score - a.score || Math.random() - 0.5);
+  return scored;
+}
+
+function buildQueue(lenF, themeF, structF) {
+  if (!lenF.length && !themeF.length) return [];
+  const candidates = buildCandidates(lenF, themeF);
+  const filtered = applyStructFilter(candidates, structF);
+  return scoreQueue(filtered, themeF);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Fragment Check (с fallback-цепочкой парсинга)
+// ═══════════════════════════════════════════════════════════════
+
+function extractPrice(html) {
+  // JSON-LD (оферта)
+  const ld = html.match(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
+  if (ld) {
+    try {
+      const obj = JSON.parse(ld[1]);
+      const offers = Array.isArray(obj) ? obj.find(o => o.offers) : obj;
+      if (offers?.offers?.price) return `${formatNumber(offers.offers.price)} TON`;
+      if (offers?.offers?.lowPrice) return `от ${formatNumber(offers.offers.lowPrice)} TON`;
+    } catch(e) {}
+  }
+  // og:description часто содержит "... sell for X TON"
+  const og = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
+  if (og) {
+    const m = og[1].match(/(\d[\d,\.]*)\s*TON/i);
+    if (m) return `${m[1]} TON`;
+  }
+  // Просто TON в теле
+  const m = html.match(/(\d[\d\s,\.]*)\s*TON(?![^<]*<\/script>)/i);
+  return m ? `${m[1].replace(/\s+/g,' ').trim()} TON` : null;
+}
+
+function extractStatus(html) {
+  const lc = html;
+
+  // ── 1. Самые специфичные маркеры Fragment ──────────────────
+  // tm-status-taken   → занят в TG, не продаётся
+  // tm-status-avail   → продаётся владельцем (sale/auction)
+  // tm-status-sold    → куплен на Fragment, занят
+  // tm-status-unavail → свободен (Username is available)
+
+  if (/tm-status-taken/i.test(lc)) return 'taken';
+  if (/tm-status-sold/i.test(lc)) return 'taken';
+
+  const availMatch = lc.match(/tm-status-avail[^>]*>([^<]+)</i);
+  const availText = availMatch ? availMatch[1].trim().toLowerCase() : '';
+  if (availMatch && /аукцион|auction|for sale|sale/i.test(availText)) return 'sale';
+
+  const unavailMatch = lc.match(/tm-status-unavail[^>]*>([^<]+)</i);
+  const unavailText = unavailMatch ? unavailMatch[1].trim().toLowerCase() : '';
+  if (unavailMatch && /недоступно|unavailable|available/i.test(unavailText)) {
+    return 'available';
+  }
+
+  // ── 2. Fallback: текстовый поиск ────────────────────────────
+  const upper = html.toLowerCase();
+
+  // Свободен
+  if (/username is available|юзернейм свободен|ник свободен|этот юзернейм можно купить|этот юзернейм свободен/i.test(upper)) {
+    return 'available';
+  }
+
+  // На аукционе / продаётся
+  if (/на аукционе|выставлен на продажу|for sale|on auction|starting from|выкуп|купить сейчас|buy now/i.test(upper)) {
+    const soldStatus = /продано|sold/i.test(upper) && !/for sale/i.test(upper);
+    if (!soldStatus) return 'sale';
+  }
+
+  // Занят
+  if (/ник занят|юзернейм занят|this username is taken|is taken|already taken|этот юзернейм продается|sold|registered/i.test(upper)) {
+    return 'taken';
+  }
+
+  // ── 3. Совсем ничего не распознали → проверяем og:title ───
+  const ogTitle = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
+  if (ogTitle) {
+    const t = ogTitle[1].toLowerCase();
+    if (/available|свободен/i.test(t)) return 'available';
+    if (/taken|занят|sold|продано/i.test(t)) return 'taken';
+    if (/sale|auction|аукцион/i.test(t)) return 'sale';
+  }
+
+  return null;
+}
+
+async function checkFragment(username, attempt = 1) {
+  const name = username.toLowerCase();
+  const url = `https://fragment.com/username/${name}`;
+
+  // Увеличивающийся таймаут для ретраев
+  const timeout = 8000 + attempt * 3000;
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(() => ctrl.abort(), timeout);
+
+  // Подмешиваем cookie если есть
+  const headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9,ru;q=0.8',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+  };
+  const cookie = localStorage.getItem(COOKIE_KEY);
+  if (cookie) headers['Cookie'] = `stel_ssid=${cookie}`;
+
+  try {
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      headers,
+      mode: 'cors',
+      credentials: 'omit',
+      redirect: 'follow',
+    });
+
+    if (!res.ok) {
+      if (res.status === 429 || res.status >= 500) {
+        if (attempt < 3) {
+          await sleep(1000 * attempt);
+          return checkFragment(username, attempt + 1);
+        }
+      }
+      return { status: 'error', msg: `HTTP ${res.status}` };
+    }
+
+    const html = await res.text();
+    const status = extractStatus(html);
+
+    if (status) {
+      return status === 'sale'
+        ? { status: 'sale', price: extractPrice(html) }
+        : { status };
+    }
+
+    // Не смогли распарсить — попробуем ещё раз (мог получить капчу/пустоту)
+    if (attempt < 2) {
+      await sleep(800);
+      return checkFragment(username, attempt + 1);
+    }
+    return { status: 'taken' }; // безопасный fallback
+
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      if (attempt < 3) return checkFragment(username, attempt + 1);
+      return { status: 'error', msg: 'Таймаут' };
+    }
+    return { status: 'error', msg: e.message };
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Caching
+// ═══════════════════════════════════════════════════════════════
+
+const cache = new Map();
+const CACHE_TTL = 3600_000; // 1 час
+
+function getCached(name) {
+  const item = cache.get(name);
+  if (!item) return null;
+  if (Date.now() - item.ts > CACHE_TTL) {
+    cache.delete(name);
+    return null;
+  }
+  return item.result;
+}
+
+function setCached(name, result) {
+  cache.set(name, { result, ts: Date.now() });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Persistence
+// ═══════════════════════════════════════════════════════════════
+
+const persistDebounced = debounce(() => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      results: state.results,
+      settings: {
+        len: getActive('len'),
+        theme: getActive('theme'),
+        struct: getActive('struct'),
+        stopLimit: $('#stopLimit').value,
+        concurrency: $('#concurrency').value,
+        showFilter: $('#showFilter').value,
+      },
+      savedAt: Date.now(),
+    }));
+  } catch(e) {
+    console.warn('Persist failed:', e);
+  }
+}, 1000);
+
+function restoreState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!data.results?.length) return;
+
+    const ageHours = (Date.now() - (data.savedAt || 0)) / 3600_000;
+    const msg = ageHours > 24
+      ? `Восстановить ${data.results.length} результатов (сохранены ${Math.round(ageHours/24)} дн назад)?`
+      : `Восстановить ${data.results.length} результатов с прошлой сессии?`;
+
+    if (!confirm(msg)) return;
+
+    // Восстановить настройки
+    if (data.settings) {
+      ['len', 'theme', 'struct'].forEach(g => {
+        $$_(`.chip[data-g="${g}"]`).forEach(c => c.classList.remove('on'));
+        (data.settings[g === 'len' ? 'len' : g === 'theme' ? 'theme' : g === 'struct' ? 'struct' : ''] || []).forEach(v => {
+          const chip = document.querySelector(`.chip[data-g="${g}"][data-v="${v}"]`);
+          if (chip) chip.classList.add('on');
+        });
+      });
+      if (data.settings.stopLimit) $('#stopLimit').value = data.settings.stopLimit;
+      if (data.settings.concurrency) $('#concurrency').value = data.settings.concurrency;
+      if (data.settings.showFilter) $('#showFilter').value = data.settings.showFilter;
+    }
+
+    // Восстановить результаты
+    data.results.forEach(r => {
+      state.results.push(r);
+      addCard(r.name, r.status, r.price, r.tags, r.score, false);
+      if (r.status === 'available') state.cntFree++;
+      else if (r.status === 'sale') state.cntSale++;
+      else state.cntTaken++;
+    });
+    updateCounters();
+    $('#resultsToolbar').style.display = 'flex';
+    $('#downloadRow').style.display = 'flex';
+    applyResultFilter();
+    toast(`Восстановлено ${data.results.length} результатов`, 'success');
+  } catch(e) {
+    console.warn('Restore failed:', e);
+  }
+}
+
+function $$_(sel) { return [...document.querySelectorAll(sel)]; }
+
+// ═══════════════════════════════════════════════════════════════
+// UI: Cards
+// ═══════════════════════════════════════════════════════════════
+
+function makeCardEl(name, status, price, tags, score) {
+  const pct = Math.min(100, Math.round((score || 0) / 1.5));
+  const card = document.createElement('div');
+  const icon = status === 'sale' ? '🏷' : status === 'available' ? '✅' : '🔒';
+  card.className = 'result-card' + (status === 'sale' ? ' sale' : status === 'taken' ? ' taken' : '');
+  card.dataset.status = status;
+  card.dataset.name = name;
+  card.dataset.score = score || 0;
+  card.dataset.length = name.length;
+  card.dataset.ts = Date.now();
+  card.innerHTML = `
+    <div class="result-top">
+      <span class="result-name">${icon} @${name}</span>
+      <a class="result-link" href="https://fragment.com/username/${name}" target="_blank" rel="noopener" title="Открыть на Fragment">↗</a>
+    </div>
+    ${price ? `<div class="result-price">${price}</div>` : ''}
+    <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
+    <div class="badges">${tags.map(t => `<span class="badge">${t}</span>`).join('')}</div>
+  `;
+  return card;
+}
+
+function addCard(name, status, price, tags, score, prepend = true) {
+  const card = makeCardEl(name, status, price, tags, score);
+  const grid = $('#results');
+  if (prepend) grid.prepend(card);
+  else grid.appendChild(card);
+
+  // Click-to-copy (не на ссылке)
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('a')) return;
+    navigator.clipboard.writeText(name).then(() => {
+      card.classList.add('flash');
+      setTimeout(() => card.classList.remove('flash'), 600);
+      toast(`Скопировано: @${name}`, 'success', 1500);
+    });
+  });
+
+  applyShowFilter();
+  applyResultFilter();
+}
+
+function applyShowFilter() {
+  const filter = $('#showFilter').value;
+  $$('.result-card').forEach(c => {
+    const st = c.dataset.status;
+    const show = filter === 'all' || filter === st;
+    if (st === 'taken') {
+      c.classList.toggle('show', show);
+    } else {
+      c.style.display = show ? '' : 'none';
+    }
+  });
+}
+
+function applyResultFilter() {
+  const q = ($('#searchInput').value || '').toLowerCase();
+  const sort = $('#sortBy').value;
+  const cards = $$('.result-card');
+
+  // Поиск
+  cards.forEach(c => {
+    if (!q) {
+      c.style.removeProperty('display');
+      c.classList.remove('hidden-search');
+    } else {
+      const matches = c.dataset.name.includes(q);
+      c.classList.toggle('hidden-search', !matches);
+    }
+  });
+
+  // Сортировка (только видимых)
+  const visibleCards = [...cards].filter(c => !c.classList.contains('hidden-search'));
+  visibleCards.sort((a, b) => {
+    if (sort === 'score') return +b.dataset.score - +a.dataset.score;
+    if (sort === 'length') return +a.dataset.length - +b.dataset.length;
+    if (sort === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+    if (sort === 'time') return +b.dataset.ts - +a.dataset.ts;
+    return 0;
+  });
+
+  const grid = $('#results');
+  visibleCards.forEach(c => grid.appendChild(c));
+
+  // Счётчик видимых
+  const visible = visibleCards.length;
+  $('#visibleCount').textContent = visible;
+}
+
+function updateCounters() {
+  $('#cntFree').textContent = state.cntFree;
+  $('#cntSale').textContent = state.cntSale;
+  $('#cntTaken').textContent = state.cntTaken;
+  $('#cntTotal').textContent = state.results.length;
+}
+
+function updateMeta(checked, total, queueLen) {
+  const elapsed = (performance.now() - state.startedAt) / 1000;
+  const rate = checked / Math.max(0.1, elapsed);
+  const eta = (total - checked) / Math.max(0.1, rate);
+  const errStr = state.consecutiveErrors > 0 ? ` · ⚠️ ${state.consecutiveErrors} ошибок подряд` : '';
+  $('#meta').innerHTML = `Проверено: <b>${checked}</b>/${total} · <b>${rate.toFixed(1)}</b> req/s · ETA: <b>${formatTime(eta)}</b>${errStr}`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Hunt Engine (параллельный)
+// ═══════════════════════════════════════════════════════════════
+
+let abortController = null;
+
+function resetCounters() {
+  state.cntFree = 0;
+  state.cntSale = 0;
+  state.cntTaken = 0;
+  state.checked = 0;
+  state.consecutiveErrors = 0;
+  state.cursor = 0;
+  state.results = [];
+  state.errors = 0;
+  state.currentDelay = 350;
+  state.startedAt = performance.now();
+  $('#results').innerHTML = '';
+  updateCounters();
+}
+
+async function processItem(item, queueLen, goalHit) {
+  // Check cache
+  let result = getCached(item.name);
+  if (result) {
+    recordResult(item, result, queueLen);
+    return;
+  }
+
+  result = await checkFragment(item.name);
+
+  if (result.status === 'error') {
+    state.errors++;
+    state.consecutiveErrors++;
+    if (state.consecutiveErrors >= 5) {
+      throw new Error('Слишком много ошибок подряд — проверьте Allow CORS');
+    }
+    // backoff
+    await sleep(800);
+    return false;  // не засчитываем
+  }
+
+  state.consecutiveErrors = 0;
+  setCached(item.name, result);
+  recordResult(item, result, queueLen);
+  return true;
+}
+
+function recordResult(item, result, queueLen) {
+  state.checked++;
+
+  const status = result.status;
+  if (status === 'available') state.cntFree++;
+  else if (status === 'sale') state.cntSale++;
+  else state.cntTaken++;
+
+  const itemWithPrice = {
+    name: item.name,
+    status,
+    price: result.price || null,
+    tags: item.tags,
+    score: item.score,
+    ts: Date.now(),
+  };
+
+  state.results.push(itemWithPrice);
+
+  addCard(item.name, status, result.price, item.tags, item.score);
+  updateCounters();
+
+  const GOAL = parseInt($('#stopLimit').value, 10);
+  if (GOAL > 0) {
+    const pct = Math.min(100, Math.round(state.cntFree / GOAL * 100));
+    $('#pb').style.width = pct + '%';
+  }
+
+  // Persist каждые ~20 результатов
+  if (state.checked % 20 === 0) persistDebounced();
+  updateMeta(state.checked, queueLen, queueLen);
+}
+
+async function worker(id, queue, goalHit) {
+  while (state.running && !goalHit()) {
+    if (state.paused) {
+      await sleep(300);
+      continue;
+    }
+
+    const idx = state.cursor++;
+    if (idx >= queue.length) return;
+
+    const item = queue[idx];
+
+    try {
+      await processItem(item, queue.length, goalHit);
+    } catch (e) {
+      throw e;
+    }
+
+    // Адаптивная задержка между запросами ВНУТРИ воркера
+    await sleep(state.currentDelay);
+  }
+}
+
+async function startHunt() {
+  const lenF = getActive('len');
+  const themeF = getActive('theme');
+  const structF = getActive('struct');
+
+  if (!lenF.length && !themeF.length) {
+    $('#status').textContent = '⚠️ Выберите хотя бы длину или тематику.';
+    return;
+  }
+
+  const queue = buildQueue(lenF, themeF, structF);
+  if (!queue.length) {
+    $('#status').textContent = '⚠️ Нет кандидатов для выбранных фильтров.';
+    return;
+  }
+
+  // Reset
+  resetCounters();
+  state.running = true;
+  state.paused = false;
+
+  $('#startBtn').style.display = 'none';
+  $('#stopBtn').style.display = '';
+  $('#pauseBtn').style.display = '';
+  $('#pauseBtn').textContent = '❚❚ Пауза';
+  $('#pw').style.display = 'block';
+  $('#pb').style.width = '0%';
+  $('#counters').style.display = 'flex';
+  $('#resultsToolbar').style.display = 'flex';
+  $('#downloadRow').style.display = 'none';
+
+  $('#status').textContent = `🚀 Запуск ${queue.length} кандидатов…`;
+  state.startedAt = performance.now();
+
+  const concurrency = Math.max(1, Math.min(8, parseInt($('#concurrency').value, 10) || 4));
+  const GOAL = parseInt($('#stopLimit').value, 10);
+
+  const goalHit = () => GOAL > 0 && state.cntFree >= GOAL;
+
+  try {
+    await Promise.all(
+      Array.from({ length: concurrency }, (_, i) => worker(i, queue, goalHit))
+    );
+  } catch (e) {
+    state.running = false;
+    toast(e.message, 'error', 4000);
+    $('#status').textContent = `⛔ ${e.message}`;
+    stopHuntUI();
+    return;
+  }
+
+  finishHunt(queue);
+}
+
+function finishHunt(queue) {
+  state.running = false;
+  stopHuntUI();
+
+  const GOAL = parseInt($('#stopLimit').value, 10);
+  const elapsed = (performance.now() - state.startedAt) / 1000;
+  const rate = state.checked / Math.max(0.1, elapsed);
+
+  let msg;
+  if (GOAL > 0 && state.cntFree >= GOAL) {
+    msg = `✅ Готово! Найдено ${GOAL} свободных за ${Math.round(elapsed)}с (${rate.toFixed(1)} req/s).`;
+  } else {
+    msg = `Готово за ${Math.round(elapsed)}с. Свободных: ${state.cntFree} | На аукционе: ${state.cntSale} | Занятых: ${state.cntTaken}`;
+  }
+  $('#status').textContent = msg;
+  $('#meta').textContent = '';
+
+  if (state.results.length) {
+    $('#downloadRow').style.display = 'flex';
+    persistDebounced();
+    toast(msg, state.cntFree > 0 ? 'success' : 'warning');
+    if (state.cntFree > 0 || state.cntSale > 0) {
+      $('#hint').innerHTML = `💡 Клик по карточке — скопировать ник. ↗ — открыть на <a href="https://fragment.com" target="_blank">fragment.com</a>. Короткие и тематические ники стоят от сотен до сотен тысяч TON.`;
+    }
+  }
+}
+
+function stopHuntUI() {
+  $('#startBtn').style.display = '';
+  $('#stopBtn').style.display = 'none';
+  $('#pauseBtn').style.display = 'none';
+}
+
+function stopHunt() {
+  state.running = false;
+  state.paused = false;
+  stopHuntUI();
+  if (state.cursor > 0) {
+    $('#status').textContent = `⏹ Остановлено. Проверено ${state.checked}/${state.cursor + (state.results.length - state.checked)}`;
+    $('#downloadRow').style.display = state.results.length ? 'flex' : 'none';
+  }
+}
+
+function togglePause() {
+  state.paused = !state.paused;
+  const btn = $('#pauseBtn');
+  btn.textContent = state.paused ? '▶ Продолжить' : '❚❚ Пауза';
+  $('#status').textContent = state.paused ? '⏸ Пауза…' : '▶ Возобновлено…';
+}
+
+function clearAll() {
+  if (state.results.length && !confirm('Очистить все собранные результаты?')) return;
+  $('#results').innerHTML = '';
+  $('#hint').innerHTML = '';
+  $('#status').textContent = 'Выберите критерии и нажмите «Начать поиск»';
+  $('#meta').textContent = '';
+  $('#pb').style.width = '0%';
+  $('#pw').style.display = 'none';
+  $('#counters').style.display = 'none';
+  $('#downloadRow').style.display = 'none';
+  $('#resultsToolbar').style.display = 'none';
+  $('#searchInput').value = '';
+  resetCounters();
+  cache.clear();
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Downloads
+// ═══════════════════════════════════════════════════════════════
+
+function downloadList(type, format = 'txt') {
+  const items = type === 'all'
+    ? state.results
+    : state.results.filter(r => r.status === type);
+
+  if (!items.length) { toast('Нет данных для скачивания', 'warning'); return; }
+
+  let content, mime;
+  const ts = new Date().toISOString().slice(0,10);
+
+  if (format === 'json') {
+    content = JSON.stringify(items.map(formatResultJSON), null, 2);
+    mime = 'application/json';
+  } else if (format === 'csv') {
+    content = 'username,status,price,score,length,tags,checked_at\n' +
+      items.map(r => {
+        const ts = new Date(r.ts || Date.now()).toISOString();
+        const tags = (r.tags || []).join('; ').replace(/"/g, '""');
+        const price = (r.price || '').replace(/,/g, ';');
+        return `${r.name},${r.status},${price},${r.score||0},${r.name.length},"${tags}",${ts}`;
+      }).join('\n');
+    mime = 'text/csv';
+  } else {
+    content = items.map(r => {
+      let line = `@${r.name}`;
+      if (r.price) line += `\t${r.price}`;
+      if (r.status !== 'available') line += `\t[${r.status}]`;
+      return line;
+    }).join('\n');
+    mime = 'text/plain';
+  }
+
+  triggerDownload(content, `fragment-${type}-${ts}.${format}`, mime);
+  toast(`Скачано: ${items.length} ников (${format.toUpperCase()})`, 'success');
+}
+
+function formatResultJSON(r) {
+  return {
+    username: r.name,
+    status: r.status,
+    price: r.price || null,
+    score: r.score || 0,
+    length: r.name.length,
+    tags: r.tags || [],
+    url: `https://fragment.com/username/${r.name}`,
+    checked_at: new Date(r.ts || Date.now()).toISOString(),
+  };
+}
+
+function triggerDownload(content, filename, mime) {
+  const blob = new Blob([`\uFEFF${content}`], { type: `${mime};charset=utf-8` });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Quick Check
+// ═══════════════════════════════════════════════════════════════
+
+async function quickCheck() {
+  const input = $('#quickInput');
+  const el = $('#quickResult');
+  let name = input.value.trim().replace(/^@/, '').toLowerCase();
+
+  // Валидация по правилам Telegram
+  if (!name) {
+    el.className = 'quick-result';
+    el.textContent = 'Введите юзернейм.';
+    return;
+  }
+  if (!/^[a-z][a-z0-9_]{2,31}$/.test(name) || /__/.test(name) || /_$/.test(name)) {
+    el.className = 'quick-result';
+    el.textContent = '⚠️ Невалидный формат (минимум 3 символа, латиница/цифры/_).';
+    return;
+  }
+
+  el.className = 'quick-result';
+  el.textContent = `⏳ Проверяем @${name}…`;
+  $('#quickBtn').disabled = true;
+
+  try {
+    const r = await checkFragment(name);
+    if (r.status === 'available') {
+      const priceStr = r.price ? ` — ${r.price}` : '';
+      el.className = 'quick-result available';
+      el.innerHTML = `✅ <strong>@${name}</strong> свободен${priceStr} <a href="https://fragment.com/username/${name}" target="_blank" rel="noopener" style="color:var(--success);font-size:12px;text-decoration:underline">Открыть ↗</a>`;
+    } else if (r.status === 'sale') {
+      const priceStr = r.price ? ` — ${r.price}` : '';
+      el.className = 'quick-result sale';
+      el.innerHTML = `🏷 <strong>@${name}</strong> на аукционе${priceStr} <a href="https://fragment.com/username/${name}" target="_blank" rel="noopener" style="color:var(--warning);font-size:12px;text-decoration:underline">Открыть ↗</a>`;
+    } else if (r.status === 'taken') {
+      el.className = 'quick-result taken';
+      el.innerHTML = `🔒 <strong>@${name}</strong> занят <a href="https://fragment.com/username/${name}" target="_blank" rel="noopener" style="color:var(--danger);font-size:12px;text-decoration:underline">Открыть ↗</a>`;
+    } else {
+      el.className = 'quick-result';
+      el.textContent = `⚠️ Ошибка: ${r.msg || 'не удалось проверить. Проверьте Allow CORS.'}`;
+    }
+  } finally {
+    $('#quickBtn').disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Cookie modal
+// ═══════════════════════════════════════════════════════════════
+
+function openCookiesModal() {
+  $('#cookiesInput').value = localStorage.getItem(COOKIE_KEY) || '';
+  $('#cookiesModal').classList.add('show');
+}
+
+function closeCookiesModal() {
+  $('#cookiesModal').classList.remove('show');
+}
+
+function saveCookies() {
+  const v = $('#cookiesInput').value.trim();
+  if (v) {
+    localStorage.setItem(COOKIE_KEY, v);
+    toast('Cookie сохранён', 'success');
+  } else {
+    localStorage.removeItem(COOKIE_KEY);
+    toast('Cookie удалён', 'warning');
+  }
+  closeCookiesModal();
+}
+
+function clearCookies() {
+  $('#cookiesInput').value = '';
+  localStorage.removeItem(COOKIE_KEY);
+  toast('Cookie удалён', 'warning');
+  closeCookiesModal();
+}
+
+// Закрытие модалки по клику на бэкдроп
+$('#cookiesModal').addEventListener('click', (e) => {
+  if (e.target.id === 'cookiesModal') closeCookiesModal();
+});
+
+// ═══════════════════════════════════════════════════════════════
+// Wiring
+// ═══════════════════════════════════════════════════════════════
+
+document.querySelectorAll('.chip').forEach(c => {
+  c.addEventListener('click', () => {
+    c.classList.toggle('on');
+    persistDebounced();
+  });
+});
+
+function getActive(group) {
+  return $$_(`.chip[data-g="${group}"].on`).map(c => c.dataset.v);
+}
+
+$('#startBtn').addEventListener('click', startHunt);
+$('#stopBtn').addEventListener('click', stopHunt);
+$('#pauseBtn').addEventListener('click', togglePause);
+$('#clearBtn').addEventListener('click', clearAll);
+
+$('#quickBtn').addEventListener('click', quickCheck);
+$('#quickInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') quickCheck();
+});
+
+$('#showFilter').addEventListener('change', applyShowFilter);
+$('#searchInput').addEventListener('input', debounce(applyResultFilter, 150));
+$('#sortBy').addEventListener('change', applyResultFilter);
+
+$$('[data-dl]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const [type, fmt] = btn.dataset.dl.split(',');
+    downloadList(type, fmt);
+  });
+});
+
+// Сохранение настроек при изменении
+['stopLimit', 'concurrency', 'showFilter'].forEach(id => {
+  $('#(id)'.replace('(id)', id)).addEventListener('change', persistDebounced);
+});
+
+// Восстановление состояния при загрузке
+window.addEventListener('DOMContentLoaded', () => {
+  // Прячем подсказку про CORS если есть cookie (значит пользователь опытный)
+  if (localStorage.getItem(COOKIE_KEY)) {
+    const tip = $('#corsTip');
+    if (tip) tip.remove();
+  }
+  restoreState();
+});
+
+// Закрытие модалки по Esc
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeCookiesModal();
+});
+
+</script>
+
+
+</body></html>

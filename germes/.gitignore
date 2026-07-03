@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+models/*.zip
+models/vosk-model-*/
+*.log
