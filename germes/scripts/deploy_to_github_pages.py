@@ -80,7 +80,9 @@ def main() -> None:
     if create_r.returncode != 0:
         # Repo may already exist — add remote and force push
         print("  ⚠️  Repo exists, updating...")
-        run(["git", "remote", "add", "origin", f"https://github.com/{user}/{repo_name}.git"], cwd=str(tmp), check=False)
+        # Ensure clean remote state: remove stale origin before re-adding
+        run(["git", "remote", "remove", "origin"], cwd=str(tmp), check=False)
+        run(["git", "remote", "add", "origin", f"https://github.com/{user}/{repo_name}.git"], cwd=str(tmp))
         run(["git", "push", "--force", "origin", "HEAD"], cwd=str(tmp))
 
     # Enable GitHub Pages
