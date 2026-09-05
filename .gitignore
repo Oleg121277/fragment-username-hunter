@@ -83,3 +83,6 @@ voice-agent/
 SBS-Assistant/
 skills/
 templates/
+
+# Hermes internal files
+.hermes/
