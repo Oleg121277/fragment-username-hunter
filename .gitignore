@@ -86,3 +86,4 @@ templates/
 
 # Hermes internal files
 .hermes/
+nul
